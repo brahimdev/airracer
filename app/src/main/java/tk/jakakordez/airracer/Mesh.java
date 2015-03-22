@@ -23,9 +23,9 @@ public class Mesh {
     BufferedObject[] obj;
     ArrayList<Material> materials;
     ArrayList<Integer> indexBufferSizes;
-    private FloatBuffer vertexBuffer;
+    private FloatBuffer vertexBuffer, textureCoordinateBuffer;
     ArrayList<CharBuffer> indexBuffer;
-    public Mesh(String filename, AssetManager manager){
+    public Mesh(String filename, AssetManager manager, GL10 gl){
         materials = new ArrayList<Material>();
         try {
             String file = "";
@@ -35,20 +35,31 @@ public class Mesh {
 
             file = reader.readLine();
 
-            loadMtlFile(filename, manager);
+            loadMtlFile(filename, manager, gl);
             String[] data = file.split(";");// File.ReadAllText(filename).Split(';');
             String[] vertices = data[0].split(" ");
-            //String[] texcoords = data[1].split(" ");
+            String[] texcoords = data[1].split(" ");
             float[] SortedVertices = new float[vertices.length];
-           // Vector2[] SortedTextureCoordinates = new Vector2[texcoords.length/2];
             for (int i = 0; i < vertices.length; i++)
             {
                 SortedVertices[i] = Float.parseFloat(vertices[i]);
             }
-            /*for (int i = 0; i < texcoords.length-1; i+=2)
+
+            // Load texture coordinates
+            float[] TexCoords = new float[texcoords.length];
+
+            for (int i = 0; i < texcoords.length; i++)
             {
-                SortedTextureCoordinates[i / 2] = new Vector2(Float.parseFloat(texcoords[i]), Float.parseFloat(texcoords[i + 1]));
-            }*/
+                //SortedTextureCoordinates[i / 2] = new Vector2(Float.parseFloat(texcoords[i]), Float.parseFloat(texcoords[i + 1]));
+                TexCoords[i] = Float.parseFloat(texcoords[i]);
+
+            }
+            ByteBuffer byteBuf = ByteBuffer.allocateDirect(texcoords.length * 4);
+            byteBuf.order(ByteOrder.nativeOrder());
+            textureCoordinateBuffer = byteBuf.asFloatBuffer();
+            textureCoordinateBuffer.put(TexCoords);
+            textureCoordinateBuffer.position(0);
+
             int bufferSize;
             indexBuffer = new ArrayList<CharBuffer>();
             indexBufferSizes = new ArrayList<Integer>();
@@ -87,7 +98,7 @@ public class Mesh {
         catch(IOException e){}
     }
 
-    public void loadMtlFile(String filename, AssetManager content)
+    public void loadMtlFile(String filename, AssetManager content, GL10 gl)
     {
         Material currentMaterial = null;
         try {
@@ -108,16 +119,16 @@ public class Mesh {
                             currentMaterial.Brush = new Color4(Float.parseFloat(line[1]), Float.parseFloat(line[2]), Float.parseFloat(line[3]));
                         }
                         break;
-               /* case "map_Kd":
+                case "map_Kd":
                     if(currentMaterial != null)
                     {
-                        String[] flnm = filename.Replace('\\', '/').Split('/');
+                        String[] flnm = filename.replace('\\', '/').split("/");
                         String result = "";
-                        for (int j = 0; j < flnm.Length - 1; j++) result += flnm[j] + "/";
-                        currentMaterial.Texture = (int)Misc.LoadTexture(result + line[1], 1);
+                        for (int j = 0; j < flnm.length - 1; j++) result += flnm[j] + "/";
+                        currentMaterial.Texture = World.LoadTexture(result + line[1], gl, content);
                         currentMaterial.TexturePath = result + line[1];
                     }
-                    break;*/
+                    break;
                 }
             }
             if (currentMaterial != null)materials.add(currentMaterial);//Misc.Push<Material>(currentMaterial, ref materials);
@@ -127,6 +138,8 @@ public class Mesh {
 
     public void Draw(GL10 gl, int color)
     {
+        gl.glEnable(GL10.GL_TEXTURE_2D);
+
         gl.glFrontFace(GL10.GL_CCW);
         // Enable face culling.
         //gl.glEnable(GL10.GL_CULL_FACE);
@@ -134,16 +147,19 @@ public class Mesh {
         gl.glCullFace(GL10.GL_BACK);
         // Enabled the vertices buffer for writing and to be used during
         // rendering.
-        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+
         // Specifies the location and data format of an array of vertex
         // coordinates to use when rendering.
         gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
         for (int i = 0; i < indexBufferSizes.size(); i++)
         {
-
+            gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
             if (materials.get(i).Texture != 0)
             {
+                gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
                 gl.glColor4f(1, 1, 1, 1);
+
+                gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureCoordinateBuffer);
                 gl.glBindTexture(GL10.GL_TEXTURE_2D, materials.get(i).Texture);
             }
             else
@@ -152,16 +168,19 @@ public class Mesh {
                     case 0: materials.get(i).Brush.set(gl); break;
                     case 1: gl.glColor4f(1, 1.004f, 0.013f, 1); break;
                     case 2: gl.glColor4f(0.462f, 1, 0.013f, 1); break;
-
                 }
 
                 gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
             }
 
             gl.glDrawElements(GL10.GL_TRIANGLES, indexBufferSizes.get(i), GL10.GL_UNSIGNED_SHORT, indexBuffer.get(i));
+            if (materials.get(i).Texture != 0) gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+            gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         }
         // Disable the vertices buffer.
-        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+
+
+        gl.glDisable(GL10.GL_TEXTURE_2D);
         // Disable face culling.
         gl.glDisable(GL10.GL_CULL_FACE);
     }

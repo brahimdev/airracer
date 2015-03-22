@@ -19,11 +19,11 @@ public class MeshCollection {
         paths = new ArrayList<String>();
     }
 
-    public int Import(String path){
+    public int Import(String path, GL10 gl){
         for(int i = 0; i < paths.size(); i++){
             if(paths.get(i) == path) return i;
         }
-        meshes.add(new Mesh(path, cnt));
+        meshes.add(new Mesh(path, cnt, gl));
         return meshes.size()-1;
     }
 

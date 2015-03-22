@@ -1,9 +1,14 @@
 package tk.jakakordez.airracer;
 
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.opengl.GLU;
+import android.opengl.GLUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -20,12 +25,12 @@ public class World {
     float[] viewMatrix;
     Boolean crash = false;
     MeshCollection meshCollector;
-    public World(AssetManager content){
+    public World(AssetManager content, GL10 gl){
         GameMenu g;
         meshCollector = new MeshCollection(content);
-        player = new Airplane("extra", meshCollector);
-        scenery = meshCollector.Import("abudhabi/abudhabi");
-        InitWaypoints(content);
+        player = new Airplane("extra", meshCollector, gl);
+        scenery = meshCollector.Import("abudhabi/abudhabi", gl);
+        InitWaypoints(content, gl);
         viewMatrix = new float[16];
     }
 
@@ -33,9 +38,36 @@ public class World {
         return new Vector3(m[12], m[13], m[14]);
     }
 
-    private void InitWaypoints(AssetManager content){
+    public static int LoadTexture(String path, GL10 gl, AssetManager content){
+        try {
+            int r[] = new int[1];
+            gl.glGenTextures(1, r, 0);
+            gl.glBindTexture(GL10.GL_TEXTURE_2D, r[0]);
+
+            // Create Nearest Filtered Texture
+            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,
+                    GL10.GL_LINEAR);
+            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,
+                    GL10.GL_LINEAR);
+/*
+// Different possible texture parameters, e.g. GL10.GL_CLAMP_TO_EDGE
+            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S,
+                    GL10.GL_CLAMP_TO_EDGE);
+            gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,
+                    GL10.GL_REPEAT);*/
+
+            Bitmap bmp = BitmapFactory.decodeStream(content.open(path));
+
+            GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bmp, 0);
+            return r[0];
+        }
+        catch(IOException e){}
+        return 0;
+    }
+
+    private void InitWaypoints(AssetManager content, GL10 gl){
         waypoints = new Waypoint[10];
-        Mesh wpMesh = new Mesh("cone/cone", content);
+        Mesh wpMesh = new Mesh("cone/cone", content, gl);
         waypoints[0] = new Waypoint(wpMesh, new Vector2(2925, -2054), 20);
         waypoints[1] = new Waypoint(wpMesh, new Vector2(2263, -1619), 20);
         waypoints[2] = new Waypoint(wpMesh, new Vector2(1744, -1278), 20);

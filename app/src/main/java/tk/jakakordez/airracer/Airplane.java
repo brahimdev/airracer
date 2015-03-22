@@ -12,9 +12,9 @@ public class Airplane {
     int body, propeller;
     float[] bodyOffset, propellerOffset, cameraOffset;
     Vector3 cameraPosition;
-    public Airplane(String filename, MeshCollection content){
-        body = content.Import(filename+"/body");
-        propeller = content.Import(filename+"/propeller");
+    public Airplane(String filename, MeshCollection content, GL10 gl){
+        body = content.Import(filename+"/body", gl);
+        propeller = content.Import(filename+"/propeller", gl);
 
         bodyOffset = new float[16];
         Matrix.setIdentityM(bodyOffset, 0);
@@ -40,8 +40,9 @@ public class Airplane {
 
     public void Controll(float[] acc){
 
-        Matrix.rotateM(bodyOffset, 0, (-acc[0]+7)*0.5f, 1, 0, 0);
+        Matrix.rotateM(bodyOffset, 0, (-acc[0]+6)*0.5f, 1, 0, 0);
         Matrix.rotateM(bodyOffset, 0, acc[1]*0.5f, 0, 0, 1);
+        Matrix.rotateM(bodyOffset, 0, acc[1]*0.05f, 1, 0, 0);
         Matrix.translateM(bodyOffset, 0, 0, 0, 0.8f);
         Matrix.rotateM(propellerOffset, 0, 47, 0, 0, 1);
 

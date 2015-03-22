@@ -62,7 +62,17 @@ public class OpenGLRenderer implements Renderer, SensorEventListener {
         gl.glEnable(GL10.GL_ALPHA_TEST);
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ALPHA);
 
-        currentWorld = new World(content);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER,
+                GL10.GL_LINEAR);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER,
+                GL10.GL_LINEAR);
+
+// Different possible texture parameters, e.g. GL10.GL_CLAMP_TO_EDGE
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S,
+                GL10.GL_CLAMP_TO_EDGE);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,
+                GL10.GL_REPEAT);
+        currentWorld = new World(content, gl);
     }
 
     public void onDrawFrame(GL10 gl) {
