@@ -19,4 +19,8 @@ public class Vector3 {
     public static Vector3 Zero(){
         return new Vector3(0, 0, 0);
     }
+
+    public Vector3 Invert(){
+        return new Vector3(-X, -Y, -Z);
+    }
 }

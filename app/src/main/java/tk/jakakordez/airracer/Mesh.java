@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class Mesh {
     ArrayList<Material> materials;
     ArrayList<Integer> indexBufferSizes;
     private FloatBuffer vertexBuffer;
-    ArrayList<ShortBuffer> indexBuffer;
+    ArrayList<CharBuffer> indexBuffer;
     public Mesh(String filename, AssetManager manager){
         materials = new ArrayList<Material>();
         try {
@@ -49,7 +50,7 @@ public class Mesh {
                 SortedTextureCoordinates[i / 2] = new Vector2(Float.parseFloat(texcoords[i]), Float.parseFloat(texcoords[i + 1]));
             }*/
             int bufferSize;
-            indexBuffer = new ArrayList<ShortBuffer>();
+            indexBuffer = new ArrayList<CharBuffer>();
             indexBufferSizes = new ArrayList<Integer>();
             //GL.GenBuffers(Materials.Length, ElementArrays);
             for (int i = 0; i < data.length-2; i++)
@@ -57,10 +58,10 @@ public class Mesh {
                 if (data[i + 2] != "")
                 {
                     String[] indicies = data[i + 2].split(" ");
-                    short[] currentElements = new short[indicies.length];
+                    char[] currentElements = new char[indicies.length];
                     for (int j = 0; j < indicies.length; j++)
                     {
-                        currentElements[j] = Short.parseShort(indicies[j]);
+                        currentElements[j] = (char)Integer.parseInt(indicies[j]);
                     }
                     indexBufferSizes.add(currentElements.length);//Misc.Push<int>(currentElements.Length, ref ElementArraySizes);
                     // short is 2 bytes, therefore we multiply the number if
@@ -68,7 +69,7 @@ public class Mesh {
 
                     ByteBuffer ibb = ByteBuffer.allocateDirect(currentElements.length * 2);
                     ibb.order(ByteOrder.nativeOrder());
-                    ShortBuffer ib = ibb.asShortBuffer();
+                    CharBuffer ib = ibb.asCharBuffer();
                     ib.put(currentElements);
                     ib.position(0);
 
@@ -124,11 +125,11 @@ public class Mesh {
         catch(IOException e){}
     }
 
-    public void Draw(GL10 gl)
+    public void Draw(GL10 gl, int color)
     {
         gl.glFrontFace(GL10.GL_CCW);
         // Enable face culling.
-        gl.glEnable(GL10.GL_CULL_FACE);
+        //gl.glEnable(GL10.GL_CULL_FACE);
         // What faces to remove with the face culling.
         gl.glCullFace(GL10.GL_BACK);
         // Enabled the vertices buffer for writing and to be used during
@@ -142,12 +143,18 @@ public class Mesh {
 
             if (materials.get(i).Texture != 0)
             {
-                gl.glColor4x(255, 255, 255, 255);
+                gl.glColor4f(1, 1, 1, 1);
                 gl.glBindTexture(GL10.GL_TEXTURE_2D, materials.get(i).Texture);
             }
             else
             {
-                materials.get(i).Brush.set(gl);
+                switch (color){
+                    case 0: materials.get(i).Brush.set(gl); break;
+                    case 1: gl.glColor4f(1, 1.004f, 0.013f, 1); break;
+                    case 2: gl.glColor4f(0.462f, 1, 0.013f, 1); break;
+
+                }
+
                 gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
             }
 

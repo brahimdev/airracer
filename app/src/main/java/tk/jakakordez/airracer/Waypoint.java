@@ -10,7 +10,7 @@ public class Waypoint {
     Mesh body;
     Vector2 location;
     float radius;
-    Boolean done;
+    int stage;
     float[] worldMatrix;
     public Waypoint(Mesh Body, Vector2 Location, float Radius){
         body = Body;
@@ -22,16 +22,17 @@ public class Waypoint {
     }
 
     public void Draw(GL10 gl){
-
-        gl.glLoadIdentity();
-        gl.glLoadMatrixf(worldMatrix, 0);
-        body.Draw(gl);
+        gl.glMultMatrixf(worldMatrix, 0);
+        body.Draw(gl, stage);
     }
 
     public void Check(Vector2 player){
-        if(player.Distance(location) < radius){
-            done = true;
+        if(player.Distance(location) < radius && stage == 0){
+            stage = 1;
             // Todo: sound
+        }
+        if(player.Distance(location) < 10 && stage != 2){
+            stage = 2;
         }
     }
 }

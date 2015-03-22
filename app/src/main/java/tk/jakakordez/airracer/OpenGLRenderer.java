@@ -4,6 +4,7 @@ package tk.jakakordez.airracer;
         import javax.microedition.khronos.opengles.GL10;
 
         import android.content.res.AssetManager;
+        import android.graphics.drawable.Drawable;
         import android.hardware.Sensor;
         import android.hardware.SensorEvent;
         import android.hardware.SensorEventListener;
@@ -55,6 +56,7 @@ public class OpenGLRenderer implements Renderer, SensorEventListener {
         // Really nice perspective calculations.
         gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
         gl.glEnable(GL10.GL_COLOR_MATERIAL);
+        gl.glEnable(GL10.GL_TEXTURE_2D);
         gl.glEnable(GL10.GL_BLEND);
         gl.glEnable(GL10.GL_LIGHT0);
         gl.glEnable(GL10.GL_ALPHA_TEST);
@@ -78,9 +80,9 @@ public class OpenGLRenderer implements Renderer, SensorEventListener {
         // Reset the projection matrix
         gl.glLoadIdentity();
         // Calculate the aspect ratio of the window
-        GLU.gluPerspective(gl, 45.0f,
+        GLU.gluPerspective(gl, 80.0f,
                 (float) width / (float) height,
-                0.1f, 1000.0f);
+                1f, 2500.0f);
 
         // Select the modelview matrix
         gl.glMatrixMode(GL10.GL_MODELVIEW);

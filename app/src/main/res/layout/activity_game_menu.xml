@@ -45,6 +45,17 @@
         <Button
             android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:text="@string/scores"
+            android:id="@+id/btnScores"
+            android:layout_gravity="center_horizontal"
+            android:background="#2C57C8"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:layout_marginBottom="5dp" />
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
             android:text="@string/about"
             android:id="@+id/btnAbout"
             android:layout_gravity="center_horizontal"
