@@ -9,9 +9,11 @@ package tk.jakakordez.airracer;
         import android.hardware.SensorEvent;
         import android.hardware.SensorEventListener;
         import android.hardware.SensorManager;
+        import android.media.MediaPlayer;
         import android.opengl.GLU;
         import android.opengl.GLSurfaceView.Renderer;
         import android.opengl.GLUtils;
+        import android.view.MotionEvent;
 
 public class OpenGLRenderer implements Renderer, SensorEventListener {
     World currentWorld;
@@ -19,13 +21,15 @@ public class OpenGLRenderer implements Renderer, SensorEventListener {
     float[] accData;
     SensorManager mSensorManager;
     Sensor acc;
-    public OpenGLRenderer(AssetManager Content, SensorManager sensorManager){
+    MediaPlayer[] sounds;
+
+    public OpenGLRenderer(AssetManager Content, SensorManager sensorManager, MediaPlayer[] sounds){
         content = Content;
         accData = new float[3];
         mSensorManager = sensorManager;
         acc = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, acc, SensorManager.SENSOR_DELAY_NORMAL);
-
+        this.sounds = sounds;
     }
 
     @Override
@@ -72,7 +76,7 @@ public class OpenGLRenderer implements Renderer, SensorEventListener {
                 GL10.GL_CLAMP_TO_EDGE);
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,
                 GL10.GL_REPEAT);
-        currentWorld = new World(content, gl);
+        currentWorld = new World(content, gl, sounds, "path1");
     }
 
     public void onDrawFrame(GL10 gl) {

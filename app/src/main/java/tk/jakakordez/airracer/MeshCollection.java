@@ -30,4 +30,7 @@ public class MeshCollection {
     public void Draw(int index, GL10 gl){
         meshes.get(index).Draw(gl, 0);
     }
+    public void Draw(int index, GL10 gl, int stage){
+        meshes.get(index).Draw(gl, stage);
+    }
 }

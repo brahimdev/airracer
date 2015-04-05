@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Created by Jaka Kordež using OpenGL.\n Thanks to William T. for the model.\n ŠC Kranj © 2015"
+                android:text="Created by Jaka Kordež using OpenGL.\n Thanks to William T. and Walter Kok for the 3D models.\n ŠC Kranj © 2015"
                 android:id="@+id/textView3"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="15dp"
