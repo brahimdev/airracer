@@ -13,6 +13,7 @@ package tk.jakakordez.airracer;
         import android.opengl.GLU;
         import android.opengl.GLSurfaceView.Renderer;
         import android.opengl.GLUtils;
+        import android.provider.ContactsContract;
         import android.view.MotionEvent;
 
 public class OpenGLRenderer implements Renderer, SensorEventListener {
@@ -22,8 +23,9 @@ public class OpenGLRenderer implements Renderer, SensorEventListener {
     SensorManager mSensorManager;
     Sensor acc;
     MediaPlayer[] sounds;
-
-    public OpenGLRenderer(AssetManager Content, SensorManager sensorManager, MediaPlayer[] sounds){
+    FinishHandler fin;
+    public OpenGLRenderer(AssetManager Content, SensorManager sensorManager, MediaPlayer[] sounds, FinishHandler finished){
+        fin = finished;
         content = Content;
         accData = new float[3];
         mSensorManager = sensorManager;
@@ -76,7 +78,7 @@ public class OpenGLRenderer implements Renderer, SensorEventListener {
                 GL10.GL_CLAMP_TO_EDGE);
         gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T,
                 GL10.GL_REPEAT);
-        currentWorld = new World(content, gl, sounds, "path1");
+        currentWorld = new World(content, gl, sounds, "path1", fin);
     }
 
     public void onDrawFrame(GL10 gl) {

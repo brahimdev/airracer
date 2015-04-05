@@ -35,13 +35,18 @@ public class Waypoint {
         collection.Draw(body, gl, stage);
     }
 
-    public void Check(Vector2 player, MediaPlayer waypointSound){
-        if(player.Distance(location) < radius && stage == 0){
-            stage = 1;
-            waypointSound.start();
-        }
+    public int Check(Vector2 player, MediaPlayer waypointSound){
         if(player.Distance(location) < 10 && stage != 2){
             stage = 2;
+            waypointSound.start();
+            return 4;
         }
+        if(player.Distance(location) < radius && stage == 0){
+            stage = 1;
+
+            return 1;
+        }
+
+        return 0;
     }
 }

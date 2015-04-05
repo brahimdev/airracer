@@ -12,6 +12,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import tk.jakakordez.airracer.util.Scores;
+
 
 public class GameMenu extends Activity {
 
@@ -41,6 +43,15 @@ public class GameMenu extends Activity {
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), About.class);
 
+                startActivity(i);
+            }
+        });
+
+        Button btnScores = (Button)findViewById(R.id.btnScores);
+        btnScores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), Scores.class);
                 startActivity(i);
             }
         });

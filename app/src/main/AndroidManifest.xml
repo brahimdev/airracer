@@ -26,6 +26,14 @@
             android:label="@string/title_activity_about"
             android:theme="@style/FullscreenTheme" >
         </activity>
+        <activity
+            android:name=".util.Scores"
+            android:label="@string/title_activity_scores" >
+        </activity>
+        <activity
+            android:name=".Finish"
+            android:label="@string/title_activity_finish" >
+        </activity>
     </application>
 
 </manifest>

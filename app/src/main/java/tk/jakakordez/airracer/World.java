@@ -1,13 +1,19 @@
 package tk.jakakordez.airracer;
 
+import android.app.Notification;
+import android.app.usage.UsageEvents;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.opengl.GLU;
 import android.opengl.GLUtils;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
 
@@ -17,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -27,7 +34,8 @@ import tk.jakakordez.airracer.util.TextRender;
  */
 public class World {
     public Airplane player;
-    int scenery;
+    int scenery, score;
+    long startTime;
     Waypoint[] waypoints;
     float[] viewMatrix;
     Boolean crash = false, crashSoundPlayed = false;
@@ -35,8 +43,9 @@ public class World {
     Vector2[] trees;
     int treeMesh, wpMesh;
     MediaPlayer[] sounds;
-    Mesh cone;
-    public World(AssetManager content, GL10 gl, MediaPlayer[] sounds, String path){
+    FinishHandler appCont;
+    public World(AssetManager content, GL10 gl, MediaPlayer[] sounds, String path, FinishHandler finished){
+        appCont = finished;
         GameMenu g;
         meshCollector = new MeshCollection(content);
         player = new Airplane("extra", meshCollector, gl);
@@ -49,7 +58,7 @@ public class World {
         this.sounds = sounds;
         sounds[3].stop();
         sounds[0].start();
-
+        startTime = System.currentTimeMillis();
     }
 
     private void InitWaypoints(GL10 gl, String path, AssetManager content){
@@ -109,7 +118,12 @@ public class World {
 
         meshCollector.Draw(scenery, gl);
         for (int i = 0; i < waypoints.length; i++){
-            waypoints[i].Check(new Vector2(pos.X, pos.Z), sounds[1]);
+            int t = waypoints[i].Check(new Vector2(pos.X, pos.Z), sounds[1]);
+            score+=t;
+            if(t == 4 && i == waypoints.length-1){
+                sounds[0].stop();
+                appCont.finish(System.currentTimeMillis()-startTime, score);
+            }
             gl.glLoadIdentity();
             GLU.gluLookAt(gl, player.cameraPosition.X, player.cameraPosition.Y, player.cameraPosition.Z, pos.X, pos.Y, pos.Z, 0, 1, 0);
             waypoints[i].Draw(meshCollector, gl);
@@ -127,6 +141,7 @@ public class World {
             sounds[0].stop();
             crash = true;
             crashSoundPlayed = true;
+
         }
     }
 

@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,7 +32,6 @@ import java.io.InputStreamReader;
 public class Game extends Activity {
     MediaPlayer[] sounds;
     OpenGLRenderer glRenderer;
-    int width;
     Point size;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,14 @@ public class Game extends Activity {
         sounds[3].start();
 
         GLSurfaceView view = new GLSurfaceView(this);
-        glRenderer = new OpenGLRenderer(getResources().getAssets(), (SensorManager)getSystemService(SENSOR_SERVICE), sounds);
+        glRenderer = new OpenGLRenderer(getResources().getAssets(), (SensorManager)getSystemService(SENSOR_SERVICE), sounds, new FinishHandler(){
+            public void finish(long start, int score){
+                Intent i = new Intent(getApplicationContext(), Finish.class);
+                i.putExtra("Time", Integer.toString((int)(start/1000/60))+" min "+Integer.toString((int)(start/1000%60))+" s");
+                i.putExtra("Score", score);
+                startActivity(i);
+            }
+        });
         view.setRenderer(glRenderer);
         setContentView(view);
     }
@@ -75,3 +82,4 @@ public class Game extends Activity {
         sounds[2].release();
     }
 }
+
