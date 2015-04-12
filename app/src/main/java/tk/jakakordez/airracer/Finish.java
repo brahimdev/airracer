@@ -1,6 +1,7 @@
 package tk.jakakordez.airracer;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -25,8 +26,15 @@ public class Finish extends ActionBarActivity {
 
         TextView txt3 = (TextView)findViewById(R.id.textView3);
         Intent inte = getIntent();
-        txt3.setText("Time: "+inte.getStringExtra("Time")+"\nScore: "+Integer.toString(inte.getIntExtra("Score", 0)));
-
+        SharedPreferences scores = getSharedPreferences("Scores", 0);
+        long time = scores.getLong("time", 0);
+        int score = scores.getInt("score", 0);
+        txt3.setText((inte.getLongExtra("Time", 0)>time?"New best time: ":"Time: ")+convertTime(inte.getLongExtra("Time", 0))+"\n"+(inte.getIntExtra("Score", 0)>score?"New best score: ":"Score: ")+Integer.toString(inte.getIntExtra("Score", 0)));
+        SharedPreferences.Editor edit = scores.edit();
+        edit.clear();
+        if(inte.getLongExtra("Time", 0)>time)edit.putLong("time", inte.getLongExtra("Time", 0));
+        if(inte.getIntExtra("Score", 0)>score)edit.putInt("score", inte.getIntExtra("Score", 0));
+        edit.commit();
         Button btnBack = (Button)findViewById(R.id.btnBack);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,6 +45,10 @@ public class Finish extends ActionBarActivity {
                 startActivity(i);
             }
         });
+    }
+
+    String convertTime(long time){
+        return Integer.toString((int)(time/1000/60))+" min "+Integer.toString((int)(time/1000%60))+" s";
     }
 
 }

@@ -58,7 +58,7 @@ public class Game extends Activity {
         glRenderer = new OpenGLRenderer(getResources().getAssets(), (SensorManager)getSystemService(SENSOR_SERVICE), sounds, new FinishHandler(){
             public void finish(long start, int score){
                 Intent i = new Intent(getApplicationContext(), Finish.class);
-                i.putExtra("Time", Integer.toString((int)(start/1000/60))+" min "+Integer.toString((int)(start/1000%60))+" s");
+                i.putExtra("Time", start);
                 i.putExtra("Score", score);
                 startActivity(i);
             }

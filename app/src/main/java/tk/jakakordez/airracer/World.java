@@ -120,7 +120,7 @@ public class World {
         for (int i = 0; i < waypoints.length; i++){
             int t = waypoints[i].Check(new Vector2(pos.X, pos.Z), sounds[1]);
             score+=t;
-            if(t == 4 && i == waypoints.length-1){
+            if(t == 4 && i == 0){//waypoints.length-1){
                 sounds[0].stop();
                 appCont.finish(System.currentTimeMillis()-startTime, score);
             }
