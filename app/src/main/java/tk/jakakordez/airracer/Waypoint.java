@@ -36,14 +36,13 @@ public class Waypoint {
     }
 
     public int Check(Vector2 player, MediaPlayer waypointSound){
-        if(player.Distance(location) < 10 && stage != 2){
+        if(player.Distance(location) < 15 && stage != 2){
             stage = 2;
             waypointSound.start();
             return 4;
         }
         if(player.Distance(location) < radius && stage == 0){
             stage = 1;
-
             return 1;
         }
 

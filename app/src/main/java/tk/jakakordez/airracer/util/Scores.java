@@ -28,8 +28,10 @@ public class Scores extends Activity {
         SharedPreferences scores = getSharedPreferences("Scores", 0);
         long time = scores.getLong("time", 0);
         int score = scores.getInt("score", 0);
-        TextView txt = (TextView)findViewById(R.id.textView3);
-        txt.setText("Best time: "+convertTime(time)+"\nBest score: "+score);
+        TextView txtTime = (TextView)findViewById(R.id.txtTime);
+        TextView txtScore = (TextView)findViewById(R.id.txtScore);
+        txtTime.setText(convertTime(time));
+        txtScore.setText(Integer.toString(score));
 
         Button btnBack = (Button)findViewById(R.id.btnBack);
         btnBack.setOnClickListener(new View.OnClickListener() {

@@ -48,11 +48,9 @@ public class World {
         appCont = finished;
         GameMenu g;
         meshCollector = new MeshCollection(content);
-        player = new Airplane("extra", meshCollector, gl);
         scenery = meshCollector.Import("abudhabi/abudhabi", gl);
-
+        player = new Airplane("extra", meshCollector, gl);
         InitWaypoints(gl, path, content);
-
         InitTrees(content, gl);
         viewMatrix = new float[16];
         this.sounds = sounds;
@@ -71,7 +69,7 @@ public class World {
 
             while ((line = reader.readLine()) != null) {
                 String[] l = line.split(";");
-                wps.add(new Waypoint(wpMesh, new Vector2(Float.parseFloat(l[0]), Float.parseFloat(l[1])), 20));
+                wps.add(new Waypoint(wpMesh, new Vector2(Float.parseFloat(l[0]), Float.parseFloat(l[1])), 25));
             }
             waypoints = new Waypoint[wps.size()];
             waypoints = wps.toArray(waypoints);
@@ -120,7 +118,7 @@ public class World {
         for (int i = 0; i < waypoints.length; i++){
             int t = waypoints[i].Check(new Vector2(pos.X, pos.Z), sounds[1]);
             score+=t;
-            if(t == 4 && i == 0){//waypoints.length-1){
+            if(t == 4 && i == waypoints.length-1){
                 sounds[0].stop();
                 appCont.finish(System.currentTimeMillis()-startTime, score);
             }
